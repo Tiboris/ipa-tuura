@@ -14,4 +14,3 @@ exec:
 clean:
 	podman rm -f bridge && \
 	podman image rm ipa-tuura/base
-
