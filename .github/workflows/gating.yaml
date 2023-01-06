@@ -46,21 +46,42 @@ jobs:
           python src/ipa-tuura/manage.py test
 
   build:
-    name: run pre-commit hook but rather build image --- TBA
     runs-on: ubuntu-latest
+    name: build the docker image
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - uses: pre-commit/action@v3.0.0
+      - name: Checkout the repository
+        uses: actions/checkout@v3
 
-  test:
-    name: test the built image
-    runs-on: ubuntu-latest
-    container:
-      image: "quay.io/idmops/fedora:${{github.event.number}}"
-    needs: [pre-commit, build, test-on-ubuntu]
-    steps:
-      - name: Display OS version
-        run: cat /etc/redhat-release || uname -a
+      - name: Set up QEMU for docker
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # experimental
+      - name: print event dict
+        run: echo "${{ toJson(github.event) }}"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.CONTAINER_REGISTRY }}  # https://quay.io/repository/idmops/ipa-tuura
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "${{ secrets.REGISTRY_NAMESPACE }}/${{ github.event.repository.name }}:${{github.event.number}}"
+
+  # test:
+  #   name: test the built image
+  #   runs-on: ubuntu-latest
+  #   container:
+  # yamllint disable-line rule:line-length
+  #     image: "${{ secrets.CONTAINER_REGISTRY }}/repository/${{ secrets.REGISTRY_NAMESPACE }}/${{ github.event.repository.name }}:${{github.event.number}}"
+  #   needs: [pre-commit, build, test-on-ubuntu]
+  #   steps:
+  #     - name: Display OS version
+  #       run: cat /etc/redhat-release || uname -a
