@@ -56,10 +56,10 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           tags: |
-              ${{ (github.event_name == 'pull_request' && format('{0}:{1}', env.IMAGE_REGISTRY_GITHUB, env.IMAGE_TAG) }}
+              ${{ (github.event_name == 'pull_request' && format('{0}:{1}', env.IMAGE_REGISTRY_GITHUB, env.IMAGE_TAG) || '' }}
               ${{ (github.event_name == 'pull_request' && github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE_REGISTRY_GITHUB) ) || '' }}
               ${{ (github.event_name == 'pull_request' && github.ref_type == 'tag' && format('{0}:{1}', env.IMAGE_REGISTRY_GITHUB, github.ref_name) ) || '' }}
-              ${{ (github.event_name != 'pull_request' && format('{0}:{1}', env.IMAGE_REGISTRY_QUAY, env.IMAGE_TAG) }}
+              ${{ (github.event_name != 'pull_request' && format('{0}:{1}', env.IMAGE_REGISTRY_QUAY, env.IMAGE_TAG) || '' }}
               ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE_REGISTRY_QUAY) ) || '' }}
               ${{ (github.event_name != 'pull_request' && github.ref_type == 'tag' && format('{0}:{1}', env.IMAGE_REGISTRY_QUAY, github.ref_name) ) || '' }}
           containerfiles: |
