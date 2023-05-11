@@ -29,7 +29,7 @@ jobs:
       - name: Set lower case image name derived from repository name
         if: github.event_name == 'pull_request'
         run: |
-          echo "IMAGE_REGISTRY_GITHUB='${IMAGE_REGISTRY_GITHUB}/${IMAGE,,}'" >> ${GITHUB_ENV}
+          echo "IMAGE_REGISTRY_GITHUB=${IMAGE_REGISTRY_GITHUB}/${IMAGE,,}" >> ${GITHUB_ENV}
         env:
           IMAGE: '${{ github.repository }}'
 
